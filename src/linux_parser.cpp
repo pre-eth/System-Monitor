@@ -9,37 +9,6 @@
 using std::stof, std::string, std::vector;
 namespace fs = std::filesystem;
 
-string LinuxParser::OperatingSystem() {
-  string line, key, value;
-  std::ifstream filestream(kOSPath);
-  if (filestream.is_open()) {
-    while (std::getline(filestream, line)) {
-      std::replace(line.begin(), line.end(), ' ', '_');
-      std::replace(line.begin(), line.end(), '=', ' ');
-      std::replace(line.begin(), line.end(), '"', ' ');
-      std::istringstream linestream(line);
-      while (linestream >> key >> value) {
-        if (key == "PRETTY_NAME") {
-          std::replace(value.begin(), value.end(), '_', ' ');
-          return value;
-        }
-      }
-    }
-  }
-  return value;
-}
-
-string LinuxParser::Kernel() {
-  string os, kernel, version, line;
-  std::ifstream stream(kProcDirectory + kVersionFilename);
-  if (stream.is_open()) {
-    std::getline(stream, line);
-    std::istringstream linestream(line);
-    linestream >> os >> version >> kernel;
-  }
-  return kernel;
-}
-
 vector<int> LinuxParser::Pids() {
   vector<int> pids;
   const fs::path proc_dir{kProcDirectory};
@@ -54,8 +23,10 @@ vector<int> LinuxParser::Pids() {
   return pids;
 }
 
-// TODO: Read and return the system memory utilization
-float LinuxParser::MemoryUtilization() { return 0.0; }
+float LinuxParser::MemoryUtilization() { 
+  std::ifstream filestream(kMeminfoFilename);
+
+}
 
 // TODO: Read and return the system uptime
 long LinuxParser::UpTime() { return 0; }
