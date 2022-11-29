@@ -1,13 +1,6 @@
-#include <string>
-#include <sstream>
-#include <iomanip>
-#include <cmath>
-
 #include "format.h"
 
-using std::string;
-
-string Format::ElapsedTime(long seconds) { 
+std::string Format::ElapsedTime(long seconds) { 
     std::ostringstream date;
 
     int hours = std::floor(seconds / 3600);
