@@ -11,33 +11,12 @@ const std::string kProcDirectory{"/proc/"};
 const std::string kCmdlineFilename{"/cmdline"};
 const std::string kCpuinfoFilename{"/cpuinfo"};
 const std::string kStatusFilename{"/status"};
-const std::string kStatFilename{"/stat"};
-const std::string kUptimeFilename{"/uptime"};
 const std::string kPasswordPath{"/etc/passwd"};
 
 // System
 std::vector<int> Pids();
 int TotalProcesses();
 int RunningProcesses();
-
-// CPU
-enum CPUStates {
-  kUser_ = 0,
-  kNice_,
-  kSystem_,
-  kIdle_,
-  kIOwait_,
-  kIRQ_,
-  kSoftIRQ_,
-  kSteal_,
-  kGuest_,
-  kGuestNice_
-};
-std::vector<std::string> CpuUtilization();
-long Jiffies();
-long ActiveJiffies();
-long ActiveJiffies(int pid);
-long IdleJiffies();
 
 // Processes
 std::string Command(int pid);

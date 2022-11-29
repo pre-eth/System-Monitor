@@ -1,13 +1,25 @@
 #ifndef PROCESSOR_H
 #define PROCESSOR_H
 
+#include <string>
+#include <array>
+#include <vector>
+#include <sstream>
+#include <cmath>
+
 class Processor { 
  public:
-    float Utilization();  // TODO: See src/processor.cpp
+  float Utilization();
+  long Jiffies();
+  long ActiveJiffies();
+  long ActiveJiffies(int pid);
+  long IdleJiffies();
 
-  // TODO: Declare any necessary private members
  private:
-
+  const char* cpuCommand{"cat /proc/stat | head -n1"};
+  int prevIdle{};
+  int prevNonIdle{};
+  int prevTotal{};
+  std::array<int, 8> cpuTimes{};
 };
-
 #endif

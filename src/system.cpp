@@ -28,7 +28,7 @@ float System::MemoryUtilization() {
 }
 
 // TODO: Return the system's CPU
-Processor& System::Cpu() { return cpu_; }
+Processor& System::Cpu() { return cpu; }
 
 // TODO: Return the number of seconds since the system started running
 long System::UpTime() { return 0; }
