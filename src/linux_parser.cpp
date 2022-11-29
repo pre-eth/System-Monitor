@@ -1,12 +1,11 @@
 #include <unistd.h>
 #include <sstream>
-#include <string>
 #include <vector>
 #include <filesystem>
 
 #include "linux_parser.h"
 
-using std::stof, std::string, std::vector;
+using std::stoi, std::string, std::vector;
 namespace fs = std::filesystem;
 
 vector<int> LinuxParser::Pids() {
@@ -22,14 +21,6 @@ vector<int> LinuxParser::Pids() {
   }
   return pids;
 }
-
-float LinuxParser::MemoryUtilization() { 
-  std::ifstream filestream(kMeminfoFilename);
-
-}
-
-// TODO: Read and return the system uptime
-long LinuxParser::UpTime() { return 0; }
 
 // TODO: Read and return the number of jiffies for the system
 long LinuxParser::Jiffies() { return 0; }

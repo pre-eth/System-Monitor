@@ -13,15 +13,9 @@ const std::string kCpuinfoFilename{"/cpuinfo"};
 const std::string kStatusFilename{"/status"};
 const std::string kStatFilename{"/stat"};
 const std::string kUptimeFilename{"/uptime"};
-const std::string kMeminfoFilename{"/meminfo"};
-const std::string kVersionFilename{"/version"};
-const std::string kOSPath{"/etc/os-release"};
 const std::string kPasswordPath{"/etc/passwd"};
 
 // System
-float MemoryUtilization();
-long SystemUpTime();
-long IdleUpTime();
 std::vector<int> Pids();
 int TotalProcesses();
 int RunningProcesses();
@@ -50,7 +44,7 @@ std::string Command(int pid);
 std::string Ram(int pid);
 std::string Uid(int pid);
 std::string User(int pid);
-long int UpTime(int pid);
+long UpTime(int pid);
 }; 
 
 #endif
