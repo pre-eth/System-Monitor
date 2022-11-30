@@ -1,10 +1,6 @@
-#include <unistd.h>
-#include <cstddef>
-#include <set>
-
 #include "system.h"
 
-using std::set, std::size_t, std::string, std::vector, std::array;
+using std::string, std::vector, std::array;
 
 string System::Kernel() { return kernel; }
 
