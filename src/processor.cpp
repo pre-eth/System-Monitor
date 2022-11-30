@@ -45,9 +45,9 @@ float Processor::Utilization() {
 /*  helper function to remove processes no longer in the /proc/ dir
     that may still be in the processes vector */
 void Processor::removeDead() {
-    processes.erase(std::remove_if(processes.begin(), processes.end(), [](auto p) {
-        return std::none_of(pids.begin(), pids.end(), [](int pid){
-            return pid == p.Pid();
+    processes.erase(std::remove_if(processes.begin(), processes.end(), [&](Process& p) {
+        return std::none_of(pids.begin(), pids.end(), [=](int pid){
+            return p == pid;
         });
     }));
 }
@@ -63,10 +63,10 @@ std::vector<Process>& Processor::Processes() {
             int pid = stoi(filename);
             pids.push_back(pid);
 
-            // this ugly bit checks to see if this pid is in the Processes vector
-            if (std::find_if(processes.begin(), processes.end(), [](auto proc) {
-                return proc.Pid() == pid; 
-            }) != processes.end())
+            // this bit checks to see if this pid is in the Processes vector
+            if (std::none_of(processes.begin(), processes.end(), [pid](Process& proc) {
+                return proc == pid; 
+            }))
                 // pid wasn't found so initialize and add Process
                 processes.push_back(Process(pid));
             else
@@ -74,7 +74,7 @@ std::vector<Process>& Processor::Processes() {
                 continue;
         }
     }
-    
+
     removeDead();
 
     return processes;
