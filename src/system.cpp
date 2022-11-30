@@ -1,7 +1,6 @@
 #include <unistd.h>
 #include <cstddef>
 #include <set>
-#include <iostream>
 
 #include "system.h"
 
@@ -30,14 +29,34 @@ float System::MemoryUtilization() {
 float System::Utilization() { return cpu.Utilization(); }
 
 // TODO: Return the number of seconds since the system started running
-long System::UpTime() { return 0; }
+void System::RefreshUpTime() { 
+    char upBuffer[20];
+
+    FILE* pipe = popen("cat /proc/uptime", "r");
+    if (pipe) {
+        string timeString = fgets(upBuffer, 20, pipe);
+        std::istringstream iss(timeString);
+        float time;
+
+        iss >> time;
+        upTime = std::ceil(time);
+        iss >> time;
+        idleTime = std::ceil(time);
+
+        cpu.UpdateJiffies(upTime, std::ceil(time));
+    }
+
+    pclose(pipe);
+}
+
+int System::UpTime() { return upTime;}
+
+int System::IdleTime() { return idleTime; }
 
 void System::RefreshProcessInfo() { cpu.RefreshProcessInfo(); }
 
-// TODO: Return the number of processes actively running on the system
 int System::RunningProcesses() { return cpu.RunningProcesses(); }
 
-// TODO: Return the total number of processes on the system
 int System::TotalProcesses() { return cpu.TotalProcesses(); }
 
 vector<Process>& System::Processes() { return cpu.Processes(); }

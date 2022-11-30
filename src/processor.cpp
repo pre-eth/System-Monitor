@@ -60,3 +60,15 @@ void Processor::RefreshProcessInfo() {
 int Processor::RunningProcesses() { return running; }
 
 int Processor::TotalProcesses() { return total; }
+
+void Processor::UpdateJiffies(int u1, int u2) {
+    jiffies = u1 * Hz;
+    idleJiffies = u2 * Hz;
+    activeJiffies = jiffies - idleJiffies;
+}
+
+long Processor::Jiffies() { return jiffies;}
+
+long Processor::ActiveJiffies() { return activeJiffies; };
+
+long Processor::IdleJiffies() { return idleJiffies; };

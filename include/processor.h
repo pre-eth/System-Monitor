@@ -16,13 +16,13 @@ class Processor {
 
     FILE* pipe = popen(tickCommand, "r");
 
-    if (pipe) {
+    if (pipe)
       Hz = stoi(std::string(fgets(hzBuffer, 5, pipe)));
-    }
 
     pclose(pipe);
   };
   float Utilization();
+  void UpdateJiffies(int u1, int u2);
   long Jiffies();
   long ActiveJiffies();
   long ActiveJiffies(int pid);
@@ -37,12 +37,15 @@ class Processor {
   const char* tickCommand{"grep -oP '(?<=CONFIG_HZ=)\\d+' /boot/config-$(uname -r)"};
   const char* cpuCommand{"cat /proc/stat | head -n1"};
   const char* procRefreshCommand{"cat /proc/stat | tail -n4 | grep -oP \"\\d+\" | head -n3"};
-  int prevIdle{};
-  int prevNonIdle{};
-  int prevTotal{};
+  int prevIdle;
+  int prevNonIdle;
+  int prevTotal;
   std::array<int, 3> cpuTimes{};
-  int total{};
-  int running{};
-  std::vector<Process> processes = {};
+  int total;
+  int running;
+  long jiffies;
+  long activeJiffies;
+  long idleJiffies;
+  std::vector<Process> processes{};
 };
 #endif
