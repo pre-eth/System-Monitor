@@ -27,17 +27,17 @@ float System::MemoryUtilization() {
     return (util * 100) / 100;
 }
 
-// TODO: Return the system's CPU
-Processor& System::Cpu() { return cpu; }
+float System::Utilization() { return cpu.Utilization(); }
 
 // TODO: Return the number of seconds since the system started running
 long System::UpTime() { return 0; }
 
-// TODO: Return a container composed of the system's processes
-vector<Process>& System::Processes() { return processes_; }
+void System::RefreshProcessInfo() { cpu.RefreshProcessInfo(); }
 
 // TODO: Return the number of processes actively running on the system
-int System::RunningProcesses() { return 0; }
+int System::RunningProcesses() { return cpu.RunningProcesses(); }
 
 // TODO: Return the total number of processes on the system
-int System::TotalProcesses() { return 0; }
+int System::TotalProcesses() { return cpu.TotalProcesses(); }
+
+vector<Process>& System::Processes() { return cpu.Processes(); }

@@ -6,9 +6,7 @@
 #include <stdio.h>
 #include <cmath>
 
-#include "process.h"
 #include "processor.h"
-#include "linux_parser.h"
 
 class System {
  public:
@@ -26,13 +24,13 @@ class System {
   std::string Kernel();               
   std::string OperatingSystem(); 
   float MemoryUtilization();          
-  Processor& Cpu();                   
+  float Utilization();                   
   long UpTime();                      // TODO: See src/system.cpp
   std::vector<Process>& Processes();  // TODO: See src/system.cpp
-  int TotalProcesses();               // TODO: See src/system.cpp
-  int RunningProcesses();             // TODO: See src/system.cpp
+  void RefreshProcessInfo();
+  int TotalProcesses();               
+  int RunningProcesses();             
      
-  
  private:
   const double kiloToGig{9.5367431640625E-7};
   const char* basicCommand{"hostnamectl | grep -oP \"(?<=Operating System: ).+|(?<=Kernel: Linux ).+\""};
@@ -41,7 +39,6 @@ class System {
   std::string kernel;
   std::string os;
   Processor cpu;
-  std::vector<Process> processes_ = {};
 };
 
 #endif

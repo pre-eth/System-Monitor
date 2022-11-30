@@ -15,8 +15,6 @@ const std::string kPasswordPath{"/etc/passwd"};
 
 // System
 std::vector<int> Pids();
-int TotalProcesses();
-int RunningProcesses();
 
 // Processes
 std::string Command(int pid);

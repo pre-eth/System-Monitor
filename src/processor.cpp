@@ -1,7 +1,5 @@
 #include "processor.h"
 
-#include <iostream>
-
 // algorithm obtained from this Stack Overflow post:
 // https://stackoverflow.com/questions/23367857/accurate-calculation-of-cpu-usage-given-in-percentage-in-linux
 float Processor::Utilization() { 
@@ -41,3 +39,24 @@ float Processor::Utilization() {
     pclose(pipe);
     return std::ceil(cpu_util * 100) / 100;
 }
+
+std::vector<Process>& Processor::Processes() {
+    return processes;
+};
+
+void Processor::RefreshProcessInfo() { 
+    char procBuffer[10];
+
+    FILE* pipe = popen(procRefreshCommand, "r");
+
+    if (pipe) {
+        total = stoi(std::string(fgets(procBuffer, 10, pipe)));
+        running = stoi(std::string(fgets(procBuffer, 10, pipe)));
+    }
+
+    pclose(pipe);
+}
+
+int Processor::RunningProcesses() { return running; }
+
+int Processor::TotalProcesses() { return total; }
