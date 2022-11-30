@@ -42,17 +42,7 @@ float Processor::Utilization() {
     return std::ceil(cpu_util * 100) / 100;
 }
 
-/*  helper function to remove processes no longer in the /proc/ dir
-    that may still be in the processes vector */
-void Processor::removeDead() {
-    processes.erase(std::remove_if(processes.begin(), processes.end(), [&](Process& p) {
-        return std::none_of(pids.begin(), pids.end(), [=](int pid){
-            return p == pid;
-        });
-    }));
-}
-
-std::vector<Process>& Processor::Processes() {
+void Processor::RefreshProcesses() {
     pids.clear();
 
     /*  pid's are the names of directories in the /proc/ dir so loop through
@@ -75,9 +65,12 @@ std::vector<Process>& Processor::Processes() {
         }
     }
 
-    removeDead();
-
-    return processes;
+    /*  remove processes no longer in the /proc/ dir that may still be in the processes vector */
+    processes.erase(std::remove_if(processes.begin(), processes.end(), [&](Process& p) {
+        return std::none_of(pids.begin(), pids.end(), [=](int pid){
+            return p == pid;
+        });
+    }));
 };
 
 void Processor::RefreshProcessInfo() { 
@@ -92,6 +85,12 @@ void Processor::RefreshProcessInfo() {
 
     pclose(pipe);
 }
+
+std::vector<Process>& Processor::Processes() {
+    RefreshProcesses();
+
+    return processes;
+};
 
 int Processor::RunningProcesses() { return running; }
 

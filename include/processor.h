@@ -31,6 +31,7 @@ class Processor {
   long ActiveJiffies();
   long ActiveJiffies(int pid);
   long IdleJiffies();
+  void RefreshProcesses();
   std::vector<Process>& Processes();  
   void RefreshProcessInfo();
   int TotalProcesses();               

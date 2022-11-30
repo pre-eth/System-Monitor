@@ -2,6 +2,10 @@
 #define NCURSES_DISPLAY_H
 
 #include <curses.h>
+#include <chrono>
+#include <string>
+#include <thread>
+#include <vector>
 
 #include "process.h"
 #include "system.h"
