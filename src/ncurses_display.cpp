@@ -23,8 +23,8 @@ std::string NCursesDisplay::ProgressBar(float percent) {
 
 void NCursesDisplay::DisplaySystem(System& system, WINDOW* window) {
   int row{0};
-  mvwprintw(window, ++row, 2, ("OS: " + system.OperatingSystem()).c_str());
-  mvwprintw(window, ++row, 2, ("Kernel: " + system.Kernel()).c_str());
+  mvwprintw(window, ++row, 2, ("OS: " + system.OperatingSystem().substr(0, 15)).c_str());
+  mvwprintw(window, ++row, 2, ("Kernel: " + system.Kernel().substr(0, 21)).c_str());
   mvwprintw(window, ++row, 2, "CPU: ");
   wattron(window, COLOR_PAIR(1));
   mvwprintw(window, row, 10, "");
@@ -65,14 +65,12 @@ void NCursesDisplay::DisplayProcesses(std::vector<Process>& processes,
   mvwprintw(window, row, time_column, "TIME+");
   mvwprintw(window, row, command_column, "COMMAND");
   wattroff(window, COLOR_PAIR(2));
-  for (int i = 0; i < n; ++i) {
-    // You need to take care of the fact that the cpu utilization has already been multiplied by 100.
+  for (int i = 0; i < n; i++) {
     // Clear the line
     mvwprintw(window, ++row, pid_column, (string(window->_maxx-2, ' ').c_str()));
-    
     mvwprintw(window, row, pid_column, to_string(processes[i].Pid()).c_str());
     mvwprintw(window, row, user_column, processes[i].User().c_str());
-    float cpu = processes[i].CpuUtilization() * 100;
+    float cpu = processes[i].CpuUtilization();
     mvwprintw(window, row, cpu_column, to_string(cpu).substr(0, 4).c_str());
     mvwprintw(window, row, ram_column, processes[i].Ram().c_str());
     mvwprintw(window, row, time_column,
