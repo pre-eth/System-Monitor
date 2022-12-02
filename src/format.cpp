@@ -1,6 +1,6 @@
 #include "format.h"
 
-std::string Format::ElapsedTime(int seconds) { 
+std::string Format::ElapsedTime(long seconds) { 
     std::ostringstream date;
 
     int hours = std::floor(seconds / 3600);
@@ -11,7 +11,7 @@ std::string Format::ElapsedTime(int seconds) {
     
     date << std::setw(2) << std::setfill('0') << hours;
     date << ":" << std::setw(2) << min;
-    date << ":" << seconds;
+    date << ":" << std::setw(2) << seconds;
 
     return date.str();
  }

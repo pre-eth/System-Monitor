@@ -7,6 +7,6 @@
 #include <cmath>
 
 namespace Format {
-    std::string ElapsedTime(int times);  
+    std::string ElapsedTime(long times);  
 };                                    
 #endif
