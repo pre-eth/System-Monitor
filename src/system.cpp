@@ -13,8 +13,8 @@ float System::MemoryUtilization() {
 
     FILE* pipe = popen(memCommand, "r");
     if (pipe) {
-        string total = fgets(commBuffer, 24, pipe);
-        string used = fgets(commBuffer, 24, pipe);
+        total = fgets(commBuffer, 24, pipe);
+        used = fgets(commBuffer, 24, pipe);
         util = std::stof(used) / std::stof(total);
     }
 
@@ -24,14 +24,12 @@ float System::MemoryUtilization() {
 
 float System::Utilization() { return cpu.Utilization(); }
 
-// TODO: Return the number of seconds since the system started running
 void System::RefreshUpTime() { 
     char upBuffer[20];
 
     FILE* pipe = popen("cat /proc/uptime", "r");
     if (pipe) {
-        string timeString = fgets(upBuffer, 20, pipe);
-        std::istringstream iss(timeString);
+        std::istringstream iss(fgets(upBuffer, 20, pipe));
         float time;
 
         iss >> time;
@@ -39,15 +37,15 @@ void System::RefreshUpTime() {
         iss >> time;
         idleTime = std::ceil(time);
 
-        cpu.UpdateJiffies(upTime, std::ceil(time));
+        cpu.UpdateJiffies(upTime, idleTime);
     }
 
     pclose(pipe);
 }
 
-int System::UpTime() { return upTime;}
+long System::UpTime() { return upTime; }
 
-int System::IdleTime() { return idleTime; }
+long System::IdleTime() { return idleTime; }
 
 void System::RefreshProcessInfo() { cpu.RefreshProcessInfo(); }
 

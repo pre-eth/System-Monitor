@@ -29,8 +29,8 @@ class System {
   float MemoryUtilization();          
   float Utilization(); 
   void RefreshUpTime();                  
-  int UpTime();
-  int IdleTime();                      
+  long UpTime();
+  long IdleTime();                      
   std::vector<Process>& Processes();  
   void RefreshProcessInfo();
   int TotalProcesses();               
@@ -41,8 +41,8 @@ class System {
   const char* memCommand{"free -k | grep -oP \"\\d+\" | head -n2"};
   std::string kernel;
   std::string os;
-  int upTime{};
-  int idleTime{};
+  long upTime;
+  long idleTime;
   Processor cpu;
 };
 
