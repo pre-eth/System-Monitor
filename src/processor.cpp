@@ -43,8 +43,6 @@ float Processor::Utilization() {
 }
 
 std::vector<Process>& Processor::Processes() {
-    //std::cout << "vector has " << processes.size() << "\n";
-
     /*  pid's are the names of directories in the /proc/ dir so loop through
         and extract dir names that are only digits */
     for (auto const& d : fs::directory_iterator{ProcDir}) {
@@ -54,26 +52,31 @@ std::vector<Process>& Processor::Processes() {
 
             // this bit checks to see if this pid is in the Processes vector
             if (std::none_of(processes.begin(), processes.end(), [pid](Process& proc) {
-                return proc == pid; 
-            }))
+                return proc.Pid() == pid; 
+            })) {
                 // pid wasn't found so initialize and add Process
-                processes.push_back(Process(pid, Hz));
-            else
+                Process p(pid, Hz);
+
+                // lookup uid in hash table we created to cache /etc/passwd in constructor
+                int uid = p.FindUid();
+                p.User(passwdMap[uid]);
+                
+                processes.push_back(p);
+            } else
                 // process has already been recorded, so skip to next iteration
                 continue;
         }
     }
 
-    /* remove processes no longer in the /proc/ dir that may still be in the processes vector */
-    processes.erase(std::remove_if(processes.begin(), processes.end(), [](Process& p) {
-        return !fs::exists("/proc/"+std::to_string(p.Pid())+"/stat");
-    }));
-
-    // std::cout << "vector now has " << processes.size() << "\n";
-
-    for (Process& p: processes)
-        p.CpuUtilization(jiffies);
-
+    /*  remove processes no longer in the /proc/ dir that may still be in the processes vector 
+        if the process is valid then update its utilization */
+    for (long unsigned int i = 0; i < processes.size(); i++) {
+        if (fs::exists(processes[i].ProcFileName()))
+            processes[i].CpuUtilization(jiffies);
+        else 
+            processes.erase(processes.begin() + i);
+    }
+        
     std::sort(processes.begin(), processes.end());
 
     return processes;

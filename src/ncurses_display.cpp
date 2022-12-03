@@ -53,7 +53,7 @@ void NCursesDisplay::DisplayProcesses(std::vector<Process>& processes,
   int row{0};
   int const pid_column{2};
   int const user_column{9};
-  int const cpu_column{16};
+  int const cpu_column{18};
   int const ram_column{26};
   int const time_column{35};
   int const command_column{46};
@@ -90,8 +90,7 @@ void NCursesDisplay::Display(System& system, int n) {
   WINDOW* system_window = newwin(9, x_max - 1, 0, 0);
   WINDOW* process_window =
       newwin(3 + n, x_max - 1, system_window->_maxy + 1, 0);
-
-
+   
   while (1) {
     init_pair(1, COLOR_BLUE, COLOR_BLACK);
     init_pair(2, COLOR_GREEN, COLOR_BLACK);
@@ -104,5 +103,6 @@ void NCursesDisplay::Display(System& system, int n) {
     refresh();
     std::this_thread::sleep_for(std::chrono::seconds(1));
   }
+
   endwin();
 }
