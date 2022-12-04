@@ -2,6 +2,8 @@
 
 This is my submission for the Linux System Monitor project for Course 2 of the [Udacity C++ Nanodegree Program](https://www.udacity.com/course/c-plus-plus-nanodegree--nd213)
 
+This project was built and tested on Fedora, and is only meant to run on Linux systems as per the project prompt.
+
 ![System Monitor](images/monitor.png)
 
 ## ncurses
