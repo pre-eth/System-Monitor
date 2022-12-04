@@ -3,11 +3,9 @@
 using std::string;
 namespace fs = std::filesystem;
 
-#include <iostream>
-
 long Process::Pid() { return pid; }
 
-std::string Process::ProcFileName() { return StatFileName; }
+string Process::ProcFileName() { return StatFileName; }
 
 // based on an algorithm obtained from 
 // https://stackoverflow.com/questions/16726779/how-do-i-get-the-total-cpu-usage-of-an-application-from-proc-pid-stat/16736599#16736599
@@ -66,8 +64,20 @@ void Process::FindCommand() {
 
 string Process::Command() { return command; }
 
-// TODO: Return this process's memory utilization
-string Process::Ram() { return string(); }
+int Process::Ram() { 
+    char memBuffer[16];
+
+    FILE* pipe = popen(RAMCommand.c_str(), "r");
+
+    // after some testing, looks like some /status files don't have 
+    // VmSize info so make sure result of popen is not NULL
+    if (fgets(memBuffer, 16, pipe) != NULL) {
+        int memKb = stoi(std::string(memBuffer).substr(7));
+        memory = std::ceil(memKb / 1000);   // convert to Mb
+    }
+
+    return memory; 
+}
 
 // get user ID for process then lookup in Processor's passwdMap  
 // hashtable so we can cache the user value
@@ -79,8 +89,8 @@ int Process::FindUid() {
     std::string userContents{contents.str()};
 
     std::smatch m;
-    std::regex UserRegex{UserPrefix.append(StatusRegex)};
-    std::regex_search(userContents, m, UserRegex);
+    std::regex regex{UserRegex};
+    std::regex_search(userContents, m, regex);
 
     return stoi(m.str().substr(5));
 }
@@ -94,6 +104,8 @@ long Process::UpTime() { return (long) (startTime / ticks); }
 bool Process::operator<(Process const& a) const { 
     if (a.utilization != utilization)
         return a.utilization < utilization;
+    else if (a.memory != memory)
+        return a.memory < memory;
     return a.startTime < startTime;
 }
 
