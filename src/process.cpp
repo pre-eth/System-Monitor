@@ -3,6 +3,8 @@
 using std::string;
 namespace fs = std::filesystem;
 
+#include <iostream>
+
 long Process::Pid() { return pid; }
 
 string Process::ProcFileName() { return StatFileName; }
@@ -65,17 +67,18 @@ void Process::FindCommand() {
 string Process::Command() { return command; }
 
 int Process::Ram() { 
-    char memBuffer[16];
+    char memBuffer[16] = {0};
 
     FILE* pipe = popen(RAMCommand.c_str(), "r");
 
     // after some testing, looks like some /status files don't have 
     // VmSize info so make sure result of popen is not NULL
-    if (fgets(memBuffer, 16, pipe) != NULL) {
-        int memKb = stoi(std::string(memBuffer).substr(7));
+    if (pipe && fgets(memBuffer, 16, pipe) != NULL) {
+        pclose(pipe);
+        int memKb = stoi(std::string(memBuffer).substr(3));
         memory = std::ceil(memKb / 1000);   // convert to Mb
     }
-
+    
     return memory; 
 }
 
@@ -83,16 +86,16 @@ int Process::Ram() {
 // hashtable so we can cache the user value
 int Process::FindUid() {
     std::ifstream file{StatusFileName};
-    std::stringstream contents;
-    contents << file.rdbuf();
+    std::stringstream statusContents;
+    statusContents << file.rdbuf();
     file.close();
-    std::string userContents{contents.str()};
+    std::string contents{statusContents.str()};
 
     std::smatch m;
-    std::regex regex{UserRegex};
-    std::regex_search(userContents, m, regex);
-
-    return stoi(m.str().substr(5));
+    if (std::regex_search(contents, m, UserRegex))
+        return stoi(m.str().substr(5));
+    
+    return 0;     
 }
 
 void Process::User(std::string user) { userName = user; }

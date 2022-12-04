@@ -10,6 +10,7 @@
 #include <filesystem>
 #include <cmath>
 #include <unordered_map>
+#include <iostream>
 
 #include "process.h"
 
@@ -59,6 +60,7 @@ class Processor {
   const char* ProcRefreshCommand{"cat /proc/stat | tail -n4 | grep -oP \"\\d+\" | head -n3"};
   const char* UserFile{"/etc/passwd"};
   const std::filesystem::path ProcDir{"/proc/"};
+  float utilization{0.0f};
   int prevIdle;
   int prevNonIdle;
   int prevTotal;

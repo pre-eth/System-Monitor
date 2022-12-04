@@ -5,13 +5,12 @@ namespace fs = std::filesystem;
 // algorithm obtained from this Stack Overflow post:
 // https://stackoverflow.com/questions/23367857/accurate-calculation-of-cpu-usage-given-in-percentage-in-linux
 float Processor::Utilization() { 
-    char commBuffer[64];
-    float cpu_util = 0.0f;
+    char commBuffer[64] = {0};
     
     FILE* pipe = popen(CpuCommand, "r");
-    if (pipe) {
-        std::string result = fgets(commBuffer, 64, pipe);
-        std::stringstream res_stream(result.substr(4));
+    if (pipe && fgets(commBuffer, 64, pipe) != NULL) {
+        pclose(pipe);
+        std::stringstream res_stream(std::string(commBuffer).substr(4));
         
         // first three non-idle fields
         res_stream >> cpuTimes[0] >> cpuTimes[1] >> cpuTimes[2];
@@ -30,7 +29,7 @@ float Processor::Utilization() {
         int dTotal = total - prevTotal;
         int dIdle = idle - prevIdle;
 
-        cpu_util = (float) (dTotal - dIdle) / (float) dTotal;
+        utilization = (float) (dTotal - dIdle) / (float) dTotal;
 
         // store the values for next round of calculations
         prevTotal = total;
@@ -38,8 +37,7 @@ float Processor::Utilization() {
         prevNonIdle = non_idle;
     }
 
-    pclose(pipe);
-    return std::ceil(cpu_util * 100) / 100;
+    return (float) (utilization * 100) / 100.0f;
 }
 
 std::vector<Process>& Processor::Processes() {
@@ -47,30 +45,27 @@ std::vector<Process>& Processor::Processes() {
         and extract dir names that are only digits */
     for (auto const& d : fs::directory_iterator{ProcDir}) {
         std::string filename = d.path().stem();
-        if (std::all_of(filename.begin(), filename.end(), isdigit)) {
-            long pid = stol(filename);
-
+        if (std::all_of(filename.begin(), filename.end(), isdigit) && 
             // this bit checks to see if this pid is in the Processes vector
-            if (std::none_of(processes.begin(), processes.end(), [pid](Process& proc) {
-                return proc.Pid() == pid; 
-            })) {
-                // pid wasn't found so initialize and add Process
-                Process p(pid, Hz);
+            std::none_of(processes.begin(), processes.end(), [filename](Process& proc) {
+                return proc.Pid() == stol(filename);  
+            })
+        ) {
+            // pid wasn't found so initialize and add Process
+            Process p(stol(filename), Hz);
 
-                // lookup uid in hash table we created to cache /etc/passwd in constructor
-                int uid = p.FindUid();
-                p.User(passwdMap[uid]);
-                
-                processes.push_back(p);
-            } else
-                // process has already been recorded, so skip to next iteration
-                continue;
-        }
+            // lookup uid in hash table we created to cache /etc/passwd in constructor
+            int uid = p.FindUid();
+            p.User(passwdMap[uid]);
+            processes.push_back(p);
+        } else
+            // process has already been recorded, so skip to next iteration
+            continue;
     }
 
     /*  remove processes no longer in the /proc/ dir that may still be in the processes vector 
         if the process is valid then update its utilization */
-    for (long unsigned int i = 0; i < processes.size(); i++) {
+    for (long unsigned int i{0}; i < processes.size(); i++) {
         if (fs::exists(processes[i].ProcFileName()))
             processes[i].CpuUtilization(jiffies);
         else 
@@ -83,16 +78,15 @@ std::vector<Process>& Processor::Processes() {
 };
 
 void Processor::RefreshProcessInfo() { 
-    char procBuffer[10];
+    char procBuffer[10] = {0};
 
     FILE* pipe = popen(ProcRefreshCommand, "r");
 
-    if (pipe) {
-        total = stoi(std::string(fgets(procBuffer, 10, pipe)));
+    if (pipe && fgets(procBuffer, 10, pipe) != NULL) {
+        total = stoi(std::string(procBuffer));
         running = stoi(std::string(fgets(procBuffer, 10, pipe)));
+        pclose(pipe);
     }
-
-    pclose(pipe);
 }
 
 int Processor::RunningProcesses() { return running; }

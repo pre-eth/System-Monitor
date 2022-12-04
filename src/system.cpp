@@ -7,29 +7,30 @@ string System::Kernel() { return kernel; }
 string System::OperatingSystem() { return os; }
 
 float System::MemoryUtilization() { 
-    char commBuffer[24];
+    char commBuffer[24] = {0};
     string total, used;
     float util;
 
     FILE* pipe = popen(memCommand, "r");
-    if (pipe) {
-        total = fgets(commBuffer, 24, pipe);
+    if (pipe && fgets(commBuffer, 24, pipe) != NULL) {
+        total = commBuffer;
         used = fgets(commBuffer, 24, pipe);
+        pclose(pipe);
         util = std::stof(used) / std::stof(total);
     }
 
-    pclose(pipe);
-    return (util * 100) / 100;
+    return (util * 100) / 100.0f;
 }
 
 float System::Utilization() { return cpu.Utilization(); }
 
 void System::RefreshUpTime() { 
-    char upBuffer[20];
+    char upBuffer[20] = {0};
 
     FILE* pipe = popen("cat /proc/uptime", "r");
-    if (pipe) {
-        std::istringstream iss(fgets(upBuffer, 20, pipe));
+    if (pipe && fgets(upBuffer, 20, pipe) != NULL) {
+        pclose(pipe);
+        std::istringstream iss(upBuffer);
         float time;
 
         iss >> time;
@@ -39,8 +40,6 @@ void System::RefreshUpTime() {
 
         cpu.UpdateJiffies(upTime, idleTime);
     }
-
-    pclose(pipe);
 }
 
 long System::UpTime() { return upTime; }

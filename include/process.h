@@ -17,16 +17,15 @@ class Process {
    pid{id}, ticks{ticks} {
       /* write StatFileName now that we have the pid and
          Command and User values can be cached */
-      char buffer[32];
-      sprintf(buffer, StatFile, pid);
-      StatFileName = buffer;
+      char b1[32] = {0};
+      sprintf(b1, StatFile, pid);
+      StatFileName = b1;
 
-      memset(buffer, 0, sizeof(buffer));
-      sprintf(buffer, StatusFile, pid);
-      StatusFileName = buffer;
+      char b2[32] = {0};
+      sprintf(b2, StatusFile, pid);
+      StatusFileName = b2;
 
-      RAMCommand = RAMRegex + StatusFileName;
-
+      RAMCommand.append(StatusFileName);
       FindCommand();
    }; 
    long Pid(); 
@@ -47,16 +46,15 @@ class Process {
    const char* StatFile{"/proc/%lu/stat"};
    const char* StatusFile{"/proc/%lu/status"};
    const char* CmdlineFile{"/proc/%lu/cmdline"};
-   const char* UserRegex{"Uid:\\t\\d+(?=\\s)"};
-   const char* RAMRegex{"grep -oP \"VmSize:\\t*\\s*\\s*\\d+(?=\\skB)\" "};
+   std::regex UserRegex{"Uid:\\t\\d+(?=\\s)"};
    std::regex StatRegex{"\\(.+\\) "};
+   std::string RAMCommand{"grep -oP \"(?<=VmSize:)\\t*\\s*\\s*\\d+(?=\\s)\" "};
    std::string StatFileName;
    std::string StatusFileName;
-   std::string RAMCommand;
-   long pid;
+   long pid{0};
    int ticks;
    long startTime{0};
-   float utilization;
+   float utilization{0.0f};
    int memory{0};
    std::string userName{};
    std::string command{"Zombie"}; // if /proc/{pid}/cmdline is empty it's a zombie process

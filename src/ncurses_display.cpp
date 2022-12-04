@@ -6,14 +6,13 @@ using std::string, std::to_string;
 
 // 50 bars uniformly displayed from 0 - 100 %
 // 2% is one bar(|)
-std::string NCursesDisplay::ProgressBar(float percent) {
-  std::string result{"0% "};
+string NCursesDisplay::ProgressBar(float percent) {
+  string result{"0% "};
   int size{50};
   float bars{percent * size};
 
-  for (int i{0}; i < size; ++i) {
+  for (int i{0}; i < size; ++i)
     result += i <= bars ? '|' : ' ';
-  }
 
   string display{to_string(percent * 100).substr(0, 4)};
   if (percent < 0.1 || percent == 1.0)
@@ -45,7 +44,7 @@ void NCursesDisplay::DisplaySystem(System& system, WINDOW* window) {
   mvwprintw(window, ++row, 2,
             ("Up Time: " + Format::ElapsedTime(system.UpTime()) + 
             "\tIdle Time: " + Format::ElapsedTime(system.IdleTime())).c_str());
-  wrefresh(window);
+
 }
 
 void NCursesDisplay::DisplayProcesses(std::vector<Process>& processes,
@@ -93,6 +92,12 @@ void NCursesDisplay::Display(System& system, int n) {
       newwin(3 + n, x_max - 1, system_window->_maxy + 1, 0);
    
   while (1) {
+    // system.OperatingSystem();
+    // system.Processes();
+    // system.Kernel();
+    // ProgressBar(system.Utilization());
+    // ProgressBar(system.MemoryUtilization());
+
     init_pair(1, COLOR_BLUE, COLOR_BLACK);
     init_pair(2, COLOR_GREEN, COLOR_BLACK);
     box(system_window, 0, 0);

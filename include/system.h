@@ -14,15 +14,14 @@
 class System {
  public:
   System() {
-    char commBuffer[64];
+    char commBuffer[64] = {0};
 
     FILE* pipe = popen(basicCommand, "r");
-    if (pipe) {
-      os = fgets(commBuffer, 64, pipe);
+    if (pipe && fgets(commBuffer, 64, pipe) != NULL) {
+      os = commBuffer;
       kernel = fgets(commBuffer, 64, pipe);
+      pclose(pipe);
     }
-
-    pclose(pipe);
   };
   std::string Kernel();               
   std::string OperatingSystem(); 
